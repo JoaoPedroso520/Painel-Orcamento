@@ -137,7 +137,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     await showTab("dashboard");
   } catch (error) {
     console.error(error);
-    if (error.status === 401) {
+    if ([401, 403, 404].includes(error.status)) {
       clearStoredAuth();
       window.location.href = "/login.html";
       return;
