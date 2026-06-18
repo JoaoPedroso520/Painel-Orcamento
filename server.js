@@ -2926,12 +2926,16 @@ async function start() {
   }, 1000);
 }
 
-start().catch((error) => {
-  console.error("Falha ao iniciar aplicacao:", error);
-  process.exit(1);
-});
+if (require.main === module) {
+  start().catch((error) => {
+    console.error("Falha ao iniciar aplicacao:", error);
+    process.exit(1);
+  });
+}
 
 process.on("SIGINT", async () => {
   await prisma.$disconnect();
   process.exit(0);
 });
+
+module.exports = { app, prisma };

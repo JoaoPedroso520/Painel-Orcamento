@@ -19,7 +19,8 @@
     "cors": "^2.8.6",
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
-    "nodemailer": "^8.0.1"
+    "nodemailer": "^8.0.1",
+    "serverless-http": "^4.0.0"
   },
   "devDependencies": {
     "prisma": "^6.5.0"
