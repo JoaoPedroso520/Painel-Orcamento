@@ -1,4 +1,8 @@
-﻿class ApiClient {
+﻿const API_BASE = (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1")
+  ? "/api"
+  : "https://painel-orcamento-hm4e.onrender.com/api";
+
+class ApiClient {
   constructor() {
     this.token = getStoredAuthToken();
   }
@@ -16,7 +20,7 @@
       config.body = JSON.stringify(config.body);
     }
 
-    const response = await fetch(`/api${endpoint}`, config);
+    const response = await fetch(`${API_BASE}${endpoint}`, config);
     const rawBody = await response.text();
     let payload = {};
     if (rawBody) {
