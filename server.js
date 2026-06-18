@@ -2893,8 +2893,8 @@ app.get("/api/summary/quotes", async (_req, res) => {
 });
 
 async function start() {
-  app.listen(PORT, () => {
-    console.log(`Servidor ativo em http://localhost:${PORT}`);
+  app.listen(PORT, "0.0.0.0", () => {
+    console.log(`Servidor ativo em http://0.0.0.0:${PORT}`);
   });
   runEventReminderTick(true).catch((error) => {
     console.error("Falha no primeiro ciclo de lembretes:", error.message);
