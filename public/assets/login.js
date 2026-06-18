@@ -18,6 +18,20 @@ function showToast(message) {
   }, 3000);
 }
 
+async function readApiResponse(response) {
+  const rawBody = await response.text();
+  if (!rawBody) return {};
+  try {
+    return JSON.parse(rawBody);
+  } catch (_error) {
+    return {
+      message: response.ok
+        ? rawBody
+        : `Erro HTTP ${response.status}: ${rawBody.trim() || response.statusText || "Falha"}`
+    };
+  }
+}
+
 function getStoredAuthToken() {
   return localStorage.getItem("authToken") || sessionStorage.getItem("authToken") || "";
 }
@@ -107,7 +121,7 @@ loginForm?.addEventListener("submit", async (e) => {
       body: JSON.stringify({ username, password })
     });
 
-    const data = await response.json();
+    const data = await readApiResponse(response);
 
     if (!response.ok) {
       showToast(data.message || "Erro ao fazer login");
@@ -170,7 +184,7 @@ registerForm?.addEventListener("submit", async (e) => {
       })
     });
 
-    const data = await response.json();
+    const data = await readApiResponse(response);
 
     if (!response.ok) {
       showToast(data.message || "Erro ao criar conta");

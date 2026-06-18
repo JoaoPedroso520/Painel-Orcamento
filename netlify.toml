@@ -4,6 +4,6 @@
 
 [[redirects]]
   from = "/api/*"
-  to = "https://painel-orcamento-hm4e.onrender.com/api/:splat"
+  to = "https://painel-orcamento.onrender.com/api/:splat"
   status = 200
   force = true

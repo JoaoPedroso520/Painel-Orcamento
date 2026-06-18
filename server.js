@@ -455,6 +455,7 @@ const DEFAULT_CATALOG_ITEMS = [
 
 const DEFAULT_ALLOWED_ORIGINS = [
   "https://orcamento-desenvolvedor-jp.netlify.app",
+  "https://painel-orcamento.onrender.com",
   "https://painel-orcamento-hm4e.onrender.com",
   "http://localhost:3000",
   "http://127.0.0.1:3000"
