@@ -500,6 +500,15 @@ function normalizeProviderUsername(value) {
   return normalizeText(value).replace(/\s+/g, " ");
 }
 
+function logServerError(context, error) {
+  console.error(context, {
+    name: error?.name,
+    code: error?.code,
+    message: error?.message,
+    meta: error?.meta
+  });
+}
+
 function normalizeCatalogName(value) {
   return normalizeText(value)
     .normalize("NFD")
@@ -1164,6 +1173,50 @@ function mapCatalogItem(item) {
   };
 }
 
+function parseCatalogItemPayload(rawItem, index = 0) {
+  const item = rawItem || {};
+  const name = normalizeText(item.name);
+  const category = normalizeText(item.category);
+  const description = normalizeText(item.description);
+  const type = normalizeText(item.type).toUpperCase() || "MODULE";
+  const priceCents = toCents(item.price);
+  const estimatedDays = Math.round(Number(item.estimatedDays || 0));
+  const label = `Item ${index + 1}`;
+
+  if (!name || !category || !description) {
+    return {
+      error: `${label}: nome, categoria e descricao sao obrigatorios.`
+    };
+  }
+
+  if (!CATALOG_TYPES.has(type)) {
+    return { error: `${label}: tipo de item invalido.` };
+  }
+
+  if (!Number.isFinite(priceCents) || priceCents <= 0) {
+    return {
+      error: `${label}: preco invalido. Informe um valor maior que zero.`
+    };
+  }
+
+  if (!Number.isInteger(estimatedDays) || estimatedDays <= 0) {
+    return {
+      error: `${label}: prazo invalido. Informe quantidade de dias maior que zero.`
+    };
+  }
+
+  return {
+    data: {
+      name,
+      category,
+      description,
+      type,
+      priceCents,
+      estimatedDays
+    }
+  };
+}
+
 function mapQuoteItem(item) {
   return {
     id: item.id,
@@ -1482,7 +1535,7 @@ app.use("/api", async (req, res, next) => {
   try {
     return await requireProviderAuth(req, res, next);
   } catch (error) {
-    console.error(error);
+    logServerError("Provider auth validation failed", error);
     return res.status(500).json({ message: "Erro ao validar autenticacao." });
   }
 });
@@ -1515,45 +1568,17 @@ app.get("/api/catalog", async (req, res) => {
 
 app.post("/api/catalog", async (req, res) => {
   const providerId = req.authProvider.id;
-  const name = normalizeText(req.body.name);
-  const category = normalizeText(req.body.category);
-  const description = normalizeText(req.body.description);
-  const type = normalizeText(req.body.type).toUpperCase() || "MODULE";
-  const priceCents = toCents(req.body.price);
-  const estimatedDays = Math.round(Number(req.body.estimatedDays || 0));
+  const parsed = parseCatalogItemPayload(req.body);
 
-  if (!name || !category || !description) {
-    return res
-      .status(400)
-      .json({ message: "Nome, categoria e descricao sao obrigatorios." });
-  }
-
-  if (!CATALOG_TYPES.has(type)) {
-    return res.status(400).json({ message: "Tipo de item invalido." });
-  }
-
-  if (!Number.isFinite(priceCents) || priceCents <= 0) {
-    return res
-      .status(400)
-      .json({ message: "Preco invalido. Informe um valor maior que zero." });
-  }
-
-  if (!Number.isInteger(estimatedDays) || estimatedDays <= 0) {
-    return res.status(400).json({
-      message: "Prazo invalido. Informe quantidade de dias maior que zero."
-    });
+  if (parsed.error) {
+    return res.status(400).json({ message: parsed.error.replace(/^Item 1: /, "") });
   }
 
   try {
     const created = await prisma.catalogItem.create({
       data: {
         providerId,
-        name,
-        category,
-        description,
-        type,
-        priceCents,
-        estimatedDays
+        ...parsed.data
       }
     });
 
@@ -1561,6 +1586,50 @@ app.post("/api/catalog", async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Erro ao criar item do catalogo." });
+  }
+});
+
+app.post("/api/catalog/bulk", async (req, res) => {
+  const providerId = req.authProvider.id;
+  const items = Array.isArray(req.body) ? req.body : req.body.items;
+
+  if (!Array.isArray(items) || items.length === 0) {
+    return res.status(400).json({
+      message: "Envie uma lista de itens em items ou um array no corpo da requisicao."
+    });
+  }
+
+  if (items.length > 100) {
+    return res.status(400).json({
+      message: "Envie no maximo 100 itens por vez."
+    });
+  }
+
+  const parsedItems = items.map((item, index) => parseCatalogItemPayload(item, index));
+  const invalid = parsedItems.find((item) => item.error);
+  if (invalid) {
+    return res.status(400).json({ message: invalid.error });
+  }
+
+  try {
+    const created = await prisma.$transaction(
+      parsedItems.map((item) =>
+        prisma.catalogItem.create({
+          data: {
+            providerId,
+            ...item.data
+          }
+        })
+      )
+    );
+
+    res.status(201).json({
+      message: `${created.length} itens criados no catalogo.`,
+      items: created.map(mapCatalogItem)
+    });
+  } catch (error) {
+    logServerError("Catalog bulk create failed", error);
+    res.status(500).json({ message: "Erro ao criar itens do catalogo." });
   }
 });
 
@@ -2072,7 +2141,7 @@ app.post("/api/provider/register", async (req, res) => {
       provider: mapProviderAccount(provider)
     });
   } catch (error) {
-    console.error(error);
+    logServerError("Provider register failed", error);
     res.status(500).json({ message: "Erro ao criar acesso do prestador." });
   }
 });
@@ -2110,7 +2179,7 @@ app.post("/api/provider/login", async (req, res) => {
       provider: mapProviderAccount(updated)
     });
   } catch (error) {
-    console.error(error);
+    logServerError("Provider login failed", error);
     res.status(500).json({ message: "Erro ao realizar login do prestador." });
   }
 });

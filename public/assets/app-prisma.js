@@ -50,6 +50,7 @@ class ApiClient {
   createClient(data) { return this.request("/clients", { method: "POST", body: data }); }
   updateClient(id, data) { return this.request(`/clients/${id}`, { method: "PATCH", body: data }); }
   createCatalogItem(data) { return this.request("/catalog", { method: "POST", body: data }); }
+  createCatalogItems(items) { return this.request("/catalog/bulk", { method: "POST", body: { items } }); }
   updateCatalogItem(id, data) { return this.request(`/catalog/${id}`, { method: "PATCH", body: data }); }
   getActiveQuote() { return this.request("/quotes/active"); }
   getQuote(id) { return this.request(`/quotes/${id}`); }
@@ -191,6 +192,7 @@ function bindEvents() {
   document.getElementById("printQuoteBtn")?.addEventListener("click", printQuotePreview);
 
   document.getElementById("newServiceBtn")?.addEventListener("click", openCatalogServiceModalForCreate);
+  document.getElementById("bulkImportCatalogBtn")?.addEventListener("click", openCatalogBulkImportModal);
   document.getElementById("newClientBtn")?.addEventListener("click", openClientCreateModal);
 
   const monthlyPlanEl = document.getElementById("monthlyPlanContracted");
@@ -206,9 +208,12 @@ function bindEvents() {
   document.getElementById("closeClientHistoryModalBtn")?.addEventListener("click", closeClientHistoryModal);
   document.getElementById("closeHistoryDetailModalBtn")?.addEventListener("click", closeHistoryDetailModal);
   document.getElementById("closeCatalogServiceModalBtn")?.addEventListener("click", closeCatalogServiceModal);
+  document.getElementById("closeCatalogBulkImportModalBtn")?.addEventListener("click", closeCatalogBulkImportModal);
+  document.getElementById("cancelCatalogBulkImportBtn")?.addEventListener("click", closeCatalogBulkImportModal);
   document.getElementById("closeClientCreateModalBtn")?.addEventListener("click", closeClientCreateModal);
   document.getElementById("clientEditForm")?.addEventListener("submit", saveClientEdit);
   document.getElementById("catalogServiceForm")?.addEventListener("submit", saveCatalogServiceForm);
+  document.getElementById("catalogBulkImportForm")?.addEventListener("submit", saveCatalogBulkImport);
   document.getElementById("clientCreateForm")?.addEventListener("submit", saveClientCreateForm);
   document.getElementById("clientHistorySearch")?.addEventListener("input", debounce((e) => {
     renderClientHistory(e.target.value || "");
@@ -222,6 +227,9 @@ function bindEvents() {
   });
   document.getElementById("catalogServiceModal")?.addEventListener("click", (e) => {
     if (e.target.id === "catalogServiceModal") closeCatalogServiceModal();
+  });
+  document.getElementById("catalogBulkImportModal")?.addEventListener("click", (e) => {
+    if (e.target.id === "catalogBulkImportModal") closeCatalogBulkImportModal();
   });
   document.getElementById("clientCreateModal")?.addEventListener("click", (e) => {
     if (e.target.id === "clientCreateModal") closeClientCreateModal();
@@ -1158,6 +1166,16 @@ function openCatalogServiceModalForCreate() {
   document.getElementById("catalogServiceModal").classList.add("active");
 }
 
+function openCatalogBulkImportModal() {
+  const input = document.getElementById("catalogBulkImportJson");
+  document.getElementById("catalogBulkImportModal")?.classList.add("active");
+  setTimeout(() => input?.focus(), 0);
+}
+
+function closeCatalogBulkImportModal() {
+  document.getElementById("catalogBulkImportModal")?.classList.remove("active");
+}
+
 function closeCatalogServiceModal() {
   document.getElementById("catalogServiceModal").classList.remove("active");
 }
@@ -1216,6 +1234,39 @@ async function saveCatalogServiceForm(e) {
 
   closeCatalogServiceModal();
   await loadCatalog((document.getElementById("catalogSearch")?.value || "").trim());
+}
+
+async function saveCatalogBulkImport(e) {
+  e.preventDefault();
+  const input = document.getElementById("catalogBulkImportJson");
+  const rawJson = input?.value || "";
+  let payload;
+
+  try {
+    payload = JSON.parse(rawJson);
+  } catch (_error) {
+    showToast("JSON invalido. Confira virgulas, aspas e chaves.");
+    input?.focus();
+    return;
+  }
+
+  const items = Array.isArray(payload) ? payload : payload.items;
+  if (!Array.isArray(items) || items.length === 0) {
+    showToast("O JSON precisa ter uma lista em items.");
+    input?.focus();
+    return;
+  }
+
+  try {
+    const result = await api.createCatalogItems(items);
+    closeCatalogBulkImportModal();
+    if (input) input.value = "";
+    showToast(result.message || `${items.length} produtos salvos`);
+    await loadCatalog((document.getElementById("catalogSearch")?.value || "").trim());
+  } catch (error) {
+    console.error(error);
+    showToast(error.message || "Erro ao importar produtos");
+  }
 }
 
 function openClientCreateModal() {

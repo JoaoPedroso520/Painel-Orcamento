@@ -1,6 +1,6 @@
 [build]
   publish = "public"
-  command = "npm run prisma:generate"
+  command = "npm run netlify:build"
   functions = "netlify/functions"
 
 [[redirects]]
