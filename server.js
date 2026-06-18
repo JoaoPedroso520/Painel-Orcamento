@@ -453,7 +453,38 @@ const DEFAULT_CATALOG_ITEMS = [
   }
 ];
 
-app.use(cors());
+const DEFAULT_ALLOWED_ORIGINS = [
+  "https://orcamento-desenvolvedor-jp.netlify.app",
+  "https://painel-orcamento-hm4e.onrender.com",
+  "http://localhost:3000",
+  "http://127.0.0.1:3000"
+];
+const ALLOWED_ORIGINS = new Set([
+  ...DEFAULT_ALLOWED_ORIGINS,
+  ...String(process.env.FRONTEND_ORIGINS || "")
+    .split(",")
+    .map((origin) => origin.trim())
+    .filter(Boolean)
+]);
+
+function isAllowedCorsOrigin(origin) {
+  if (!origin) return true;
+  if (ALLOWED_ORIGINS.has(origin)) return true;
+  return /^http:\/\/(localhost|127\.0\.0\.1):\d+$/.test(origin);
+}
+
+const corsOptions = {
+  origin: (origin, cb) => {
+    if (isAllowedCorsOrigin(origin)) return cb(null, true);
+    return cb(new Error("CORS: origem nao permitida"));
+  },
+  methods: ["GET", "POST", "PATCH", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+  credentials: true
+};
+
+app.use(cors(corsOptions));
+app.options("*", cors(corsOptions));
 app.use(express.json());
 
 app.use(express.static(path.join(__dirname, "public")));
