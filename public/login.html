@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login - Painel de Orçamentos</title>
+    <link rel="icon" type="image/png" href="/img/logo-jp.png" />
+    <link rel="stylesheet" href="./assets/login.css" />
+  </head>
+  <body>
+    <div class="login-container">
+      <div class="login-card">
+        <div class="login-header">
+          <img src="/img/logo-jp.png" alt="Logo" class="login-logo" />
+          <h1>Painel de Orçamentos</h1>
+          <p>Faça login para acessar o sistema</p>
+        </div>
+
+        <form id="loginForm" class="login-form">
+          <div class="form-group">
+            <label for="username">Nome de usuário</label>
+            <input
+              type="text"
+              id="username"
+              name="username"
+              autocomplete="username"
+              required
+              autofocus
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="password">Senha</label>
+            <div class="password-wrap">
+              <input
+                type="password"
+                id="password"
+                name="password"
+                autocomplete="current-password"
+                required
+              />
+              <button type="button" class="password-toggle" data-target="password" aria-label="Mostrar senha">
+                <svg class="eye eye-open" viewBox="0 0 24 24"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                <svg class="eye eye-closed" viewBox="0 0 24 24"><path d="M3 3l18 18"></path><path d="M10.58 10.58A2 2 0 0 0 12 14a2 2 0 0 0 1.42-.58"></path><path d="M9.88 4.24A10.94 10.94 0 0 1 12 4c7 0 11 8 11 8a18.96 18.96 0 0 1-5.14 5.94"></path><path d="M6.1 6.1A18.94 18.94 0 0 0 1 12s4 8 11 8a10.93 10.93 0 0 0 5.1-1.24"></path></svg>
+              </button>
+            </div>
+          </div>
+
+          <label class="remember-row">
+            <input type="checkbox" id="rememberMe" />
+            Lembrar de mim
+          </label>
+
+          <button type="submit" class="btn-primary">Entrar</button>
+        </form>
+
+        <div class="login-footer">
+          <p>Não tem uma conta? <a href="#" id="registerLink">Criar acesso</a></p>
+        </div>
+      </div>
+
+      <div class="register-card hidden">
+        <div class="login-header">
+          <img src="/img/logo-jp.png" alt="Logo" class="login-logo" />
+          <h1>Criar Acesso</h1>
+          <p>Preencha todos os dados para criar sua conta</p>
+        </div>
+
+        <form id="registerForm" class="login-form">
+          <div class="form-group">
+            <label for="regUsername">Nome de usuário</label>
+            <input
+              type="text"
+              id="regUsername"
+              name="username"
+              autocomplete="username"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="regDisplayName">Nome completo</label>
+            <input type="text" id="regDisplayName" name="displayName" required />
+          </div>
+
+          <div class="form-group">
+            <label for="regEmail">E-mail</label>
+            <input type="email" id="regEmail" name="email" required />
+          </div>
+
+          <div class="form-group">
+            <label for="regPhone">Telefone</label>
+            <input type="tel" id="regPhone" name="phone" required />
+          </div>
+
+          <div class="form-group">
+            <label for="regCnpj">CNPJ</label>
+            <input type="text" id="regCnpj" name="cnpj" required />
+          </div>
+
+          <div class="form-group">
+            <label for="regAddress">Endereço completo</label>
+            <input type="text" id="regAddress" name="address" required />
+          </div>
+
+          <div class="form-group">
+            <label for="regCity">Cidade</label>
+            <input type="text" id="regCity" name="city" required />
+          </div>
+
+          <div class="form-group">
+            <label for="regPassword">Senha</label>
+            <div class="password-wrap">
+              <input
+                type="password"
+                id="regPassword"
+                name="password"
+                autocomplete="new-password"
+                minlength="6"
+                required
+              />
+              <button type="button" class="password-toggle" data-target="regPassword" aria-label="Mostrar senha">
+                <svg class="eye eye-open" viewBox="0 0 24 24"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                <svg class="eye eye-closed" viewBox="0 0 24 24"><path d="M3 3l18 18"></path><path d="M10.58 10.58A2 2 0 0 0 12 14a2 2 0 0 0 1.42-.58"></path><path d="M9.88 4.24A10.94 10.94 0 0 1 12 4c7 0 11 8 11 8a18.96 18.96 0 0 1-5.14 5.94"></path><path d="M6.1 6.1A18.94 18.94 0 0 0 1 12s4 8 11 8a10.93 10.93 0 0 0 5.1-1.24"></path></svg>
+              </button>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="regPasswordConfirm">Confirmar senha</label>
+            <div class="password-wrap">
+              <input
+                type="password"
+                id="regPasswordConfirm"
+                name="passwordConfirm"
+                autocomplete="new-password"
+                minlength="6"
+                required
+              />
+              <button type="button" class="password-toggle" data-target="regPasswordConfirm" aria-label="Mostrar senha">
+                <svg class="eye eye-open" viewBox="0 0 24 24"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                <svg class="eye eye-closed" viewBox="0 0 24 24"><path d="M3 3l18 18"></path><path d="M10.58 10.58A2 2 0 0 0 12 14a2 2 0 0 0 1.42-.58"></path><path d="M9.88 4.24A10.94 10.94 0 0 1 12 4c7 0 11 8 11 8a18.96 18.96 0 0 1-5.14 5.94"></path><path d="M6.1 6.1A18.94 18.94 0 0 0 1 12s4 8 11 8a10.93 10.93 0 0 0 5.1-1.24"></path></svg>
+              </button>
+            </div>
+          </div>
+
+          <button type="submit" class="btn-primary">Criar conta</button>
+        </form>
+
+        <div class="login-footer">
+          <p>Já tem uma conta? <a href="#" id="loginLink">Fazer login</a></p>
+        </div>
+      </div>
+    </div>
+
+    <div id="toast" class="toast hidden"></div>
+    <script src="./assets/login.js"></script>
+  </body>
+</html>

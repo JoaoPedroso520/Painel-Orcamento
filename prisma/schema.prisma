@@ -1,0 +1,217 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Service {
+  id             Int              @id @default(autoincrement())
+  name           String           @unique
+  category       String
+  description    String
+  basePriceCents Int
+  active         Boolean          @default(true)
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+  history        ServiceHistory[]
+}
+
+model ServiceHistory {
+  id                      Int           @id @default(autoincrement())
+  serviceId               Int
+  service                 Service       @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  quotedPriceCents        Int
+  sold                    Boolean       @default(false)
+  paymentMethod           PaymentMethod @default(PIX)
+  installments            Int           @default(1)
+  hasMachineFee           Boolean       @default(false)
+  machineFeePercentPoints Float         @default(0)
+  machineFeeCents         Int           @default(0)
+  netAmountCents          Int
+  observation             String?
+  createdAt               DateTime      @default(now())
+}
+
+model CatalogItem {
+  id            Int             @id @default(autoincrement())
+  providerId    Int?
+  provider      ProviderAccount? @relation(fields: [providerId], references: [id], onDelete: SetNull)
+  name          String
+  category      String
+  description   String
+  type          CatalogItemType @default(MODULE)
+  priceCents    Int
+  estimatedDays Int             @default(7)
+  active        Boolean         @default(true)
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  quoteItems    QuoteItem[]
+
+  @@index([providerId, active, category])
+  @@index([active, category])
+  @@index([name])
+}
+
+model Client {
+  id                Int              @id @default(autoincrement())
+  providerId        Int?
+  provider          ProviderAccount? @relation(fields: [providerId], references: [id], onDelete: SetNull)
+  name              String
+  companyName       String?
+  email             String?
+  phone             String?
+  documentType      String?
+  documentNumber    String?
+  addressZipCode    String?
+  addressState      String?
+  addressCity       String?
+  addressDistrict   String?
+  addressStreet     String?
+  addressNumber     String?
+  addressComplement String?
+  birthDate         DateTime?
+  notes             String?
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @updatedAt
+  quotes            Quote[]
+  reminderLogs      EventReminderLog[]
+
+  @@index([providerId, name])
+  @@index([name])
+  @@index([phone])
+  @@index([email])
+  @@index([documentNumber])
+}
+
+model ProviderAccount {
+  id               Int           @id @default(autoincrement())
+  username         String        @unique
+  displayName      String?
+  email            String?
+  phone            String?
+  cnpj             String?
+  address          String?
+  city             String?
+  passwordHash     String
+  passwordSalt     String
+  sessionTokenHash String?
+  sessionExpiresAt DateTime?
+  lastLoginAt      DateTime?
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+  catalogItems     CatalogItem[]
+  clients          Client[]
+  quotes           Quote[]
+  reminderLogs     EventReminderLog[]
+
+  @@index([username])
+  @@index([sessionTokenHash])
+}
+
+model Quote {
+  id                      Int              @id @default(autoincrement())
+  providerId              Int?
+  provider                ProviderAccount? @relation(fields: [providerId], references: [id], onDelete: SetNull)
+  title                   String           @default("Novo projeto")
+  clientId                Int?
+  client                  Client?          @relation(fields: [clientId], references: [id], onDelete: SetNull)
+  clientName              String?
+  notes                   String?
+  status                  QuoteStatus      @default(DRAFT)
+  pricingTier             PricingTier      @default(MVP)
+  adjustmentPercentPoints Float            @default(0)
+  discountPercentPoints   Float            @default(0)
+  paymentMethod           PaymentMethod    @default(PIX)
+  installments            Int              @default(1)
+  hasMachineFee           Boolean          @default(false)
+  machineFeePercentPoints Float            @default(0)
+  passMachineFeeToClient  Boolean          @default(false)
+  monthlyPlanContracted   Boolean          @default(false)
+  eventsPackContracted    Boolean          @default(false)
+  backendSupportContracted Boolean         @default(false)
+  frontendSupportContracted Boolean        @default(false)
+  frontendBillingStatus   BillingStatus    @default(COBRAR)
+  fullstackBillingStatus  BillingStatus    @default(COBRAR)
+  createdAt               DateTime         @default(now())
+  updatedAt               DateTime         @updatedAt
+  items                   QuoteItem[]
+  reminderLogs            EventReminderLog[]
+
+  @@index([providerId, status, updatedAt])
+  @@index([status, updatedAt])
+  @@index([clientId, updatedAt])
+}
+
+model EventReminderLog {
+  id         Int             @id @default(autoincrement())
+  providerId Int
+  provider   ProviderAccount @relation(fields: [providerId], references: [id], onDelete: Cascade)
+  quoteId    Int?
+  quote      Quote?          @relation(fields: [quoteId], references: [id], onDelete: SetNull)
+  clientId   Int?
+  client     Client?         @relation(fields: [clientId], references: [id], onDelete: SetNull)
+  eventKey   String
+  eventDate  DateTime
+  notifiedAt DateTime        @default(now())
+  createdAt  DateTime        @default(now())
+
+  @@unique([providerId, clientId, eventKey, eventDate])
+  @@index([providerId, eventDate])
+}
+
+model QuoteItem {
+  id               Int         @id @default(autoincrement())
+  quoteId          Int
+  quote            Quote       @relation(fields: [quoteId], references: [id], onDelete: Cascade)
+  catalogItemId    Int?
+  catalogItem      CatalogItem? @relation(fields: [catalogItemId], references: [id], onDelete: SetNull)
+  nameSnapshot     String
+  categorySnapshot String
+  unitPriceCents   Int
+  estimatedDays    Int         @default(7)
+  quantity         Int         @default(1)
+  lineTotalCents   Int
+  createdAt        DateTime    @default(now())
+  updatedAt        DateTime    @updatedAt
+
+  @@index([quoteId])
+}
+
+enum PaymentMethod {
+  PIX
+  BOLETO
+  CARTAO_CREDITO
+  CARTAO_DEBITO
+  DINHEIRO
+  TRANSFERENCIA
+}
+
+enum CatalogItemType {
+  BASE_PROJECT
+  MODULE
+  FEATURE
+  INTEGRATION
+  SUPPORT
+}
+
+enum QuoteStatus {
+  DRAFT
+  SENT
+  APPROVED
+  COMPLETED
+  REJECTED
+}
+
+enum PricingTier {
+  MVP
+  PADRAO
+  ROBUSTO
+}
+
+enum BillingStatus {
+  COBRAR
+  PAGO
+}

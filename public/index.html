@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Painel de Orcamentos</title>
+  <link rel="icon" type="image/png" href="/img/logo-jp.png" />
+  <link rel="stylesheet" href="./assets/new-styles.css" />
+</head>
+<body class="app">
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <img src="/img/logo-jp.png" alt="Logo" class="sidebar-logo" />
+      <h2>Orcamentos</h2>
+    </div>
+
+    <div class="sidebar-user">
+      <div class="user-avatar" id="userAvatarContainer">
+        <img id="userAvatarImage" class="user-avatar-image" alt="Foto de perfil" />
+        <div class="user-avatar-placeholder" id="userAvatarPlaceholder">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+            <circle cx="12" cy="7" r="4"></circle>
+          </svg>
+        </div>
+        <button type="button" class="avatar-camera-btn" id="avatarUploadBtn" aria-label="Alterar foto de perfil">
+          <svg viewBox="0 0 24 24"><path d="M4 7h4l2-2h4l2 2h4a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2"></path><circle cx="12" cy="13" r="4"></circle></svg>
+        </button>
+        <input id="avatarInput" class="avatar-input" type="file" accept="image/*" />
+      </div>
+      <h3 id="userName">Usuario</h3>
+      <p id="userEmail">email@exemplo.com</p>
+    </div>
+
+    <nav class="sidebar-nav">
+      <button class="nav-btn active" data-tab="dashboard">
+        <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+        Dashboard
+      </button>
+      <button class="nav-btn" data-tab="orcamentos">
+        <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+        Orcamentos
+      </button>
+      <button class="nav-btn" data-tab="catalogo">
+        <svg viewBox="0 0 24 24"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
+        Catalogo
+      </button>
+      <button class="nav-btn" data-tab="clientes">
+        <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+        Clientes
+      </button>
+      <button class="nav-btn" data-tab="historico">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+        Historico
+      </button>
+      <button class="nav-btn" data-tab="gestao">
+        <svg viewBox="0 0 24 24"><path d="M16 20V4a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v16"></path><rect x="2" y="20" width="20" height="2"></rect><path d="M10 6h4"></path><path d="M10 10h4"></path><path d="M10 14h4"></path></svg>
+        Gestao
+      </button>
+    </nav>
+
+    <div class="sidebar-footer">
+      <button class="nav-btn" id="editProfileBtn">
+        <svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+        Editar Perfil
+      </button>
+      <button class="nav-btn danger" id="logoutBtn">
+        <svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+        Sair
+      </button>
+    </div>
+  </aside>
+
+  <main class="main-content">
+    <header class="top-header">
+      <div class="header-left">
+        <button id="toggleSidebar" class="icon-btn">
+          <svg viewBox="0 0 24 24"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+        </button>
+        <h1 id="pageTitle">Dashboard</h1>
+      </div>
+      <div class="header-right">
+        <button id="themeToggle" class="icon-btn" aria-label="Alternar tema">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+        </button>
+      </div>
+    </header>
+
+    <div class="tab-content">
+      <div class="tab-pane active" id="dashboard-tab">
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-icon blue">
+              <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+            </div>
+            <div class="stat-info">
+              <h3 id="totalQuotes">0</h3>
+              <p>Total de Orçamentos</p>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon green">
+              <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
+            </div>
+            <div class="stat-info">
+              <h3 id="approvedQuotes">0</h3>
+              <p>Aprovados</p>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon purple">
+              <svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+            </div>
+            <div class="stat-info">
+              <h3 id="totalRevenue">R$ 0,00</h3>
+              <p>Receita Total</p>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon orange">
+              <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+            </div>
+            <div class="stat-info">
+              <h3 id="totalClients">0</h3>
+              <p>Clientes</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="dashboard-grid">
+          <div class="card">
+            <div class="card-header">
+              <h2>Orçamento Atual</h2>
+              <span class="badge" id="currentQuoteBadge">#--</span>
+            </div>
+            <div class="card-body">
+              <form id="quoteMetaForm" class="form">
+                <div class="form-group">
+                  <label>Nome do projeto</label>
+                  <input id="quoteTitle" required />
+                </div>
+                <div class="form-group">
+                  <label>Cliente (cadastro)</label>
+                  <select id="quoteClientId"></select>
+                </div>
+                <div class="form-group">
+                  <label>Nome do cliente na proposta</label>
+                  <input id="quoteClientName" placeholder="Ex.: Jean Pedroso" />
+                </div>
+                <div class="form-section-title">Configuracao financeira do orcamento</div>
+                <div class="form-grid two-columns">
+                  <div class="form-group">
+                    <label>Forma de pagamento</label>
+                    <select id="quotePaymentMethod">
+                      <option value="PIX">PIX</option>
+                      <option value="BOLETO">Boleto</option>
+                      <option value="CARTAO_CREDITO">Cartão de crédito</option>
+                      <option value="CARTAO_DEBITO">Cartão de débito</option>
+                      <option value="DINHEIRO">Dinheiro</option>
+                      <option value="TRANSFERENCIA">Transferência bancária</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label>Parcelas</label>
+                    <input id="quoteInstallments" type="number" min="1" max="24" step="1" value="1" />
+                  </div>
+                  <div class="form-group">
+                    <label>Faixa de preço</label>
+                    <select id="quotePricingTier">
+                      <option value="MVP">MVP</option>
+                      <option value="PADRAO">Padrao</option>
+                      <option value="ROBUSTO">Robusto</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label>Ajuste manual (%)</label>
+                    <input id="quoteAdjustmentPercent" type="text" inputmode="decimal" placeholder="ex: 10 ou 49,799" value="0" />
+                  </div>
+                  <div class="form-group">
+                    <label>Desconto (%)</label>
+                    <input id="quoteDiscountPercent" type="text" inputmode="decimal" placeholder="ex: 10 ou 49,799" value="0" />
+                  </div>
+                  <div class="form-group">
+                    <label>Taxa maquininha (%)</label>
+                    <input id="quoteMachineFeePercent" type="text" inputmode="decimal" placeholder="ex: 9,64" value="0" />
+                  </div>
+                </div>
+                <label class="check-row check-inline">
+                  <input type="checkbox" id="quoteHasMachineFee" />
+                  Aplicar taxa de maquininha
+                </label>
+                <label class="check-row check-inline">
+                  <input type="checkbox" id="quotePassMachineFeeToClient" />
+                  Repassar taxa de maquininha ao cliente
+                </label>
+                <div class="form-group">
+                  <label>Observações</label>
+                  <textarea id="quoteNotes" rows="2"></textarea>
+                </div>
+                <button type="submit" class="btn-primary">Salvar dados</button>
+              </form>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <h2>Resumo Financeiro</h2>
+            </div>
+            <div class="card-body">
+              <div class="summary-list">
+                <div class="summary-item">
+                  <span>Subtotal base</span>
+                  <strong id="rawSubtotal">R$ 0,00</strong>
+                </div>
+                <div class="summary-item">
+                  <span id="tierImpactLabel">Faixa de preço (MVP)</span>
+                  <strong id="tierImpact">R$ 0,00</strong>
+                </div>
+                <div class="summary-item">
+                  <span>Ajuste manual</span>
+                  <strong id="adjustment">R$ 0,00</strong>
+                </div>
+                <div class="summary-item">
+                  <span>Desconto</span>
+                  <strong id="discount">R$ 0,00</strong>
+                </div>
+                <div class="summary-item">
+                  <span>Subtotal negociado</span>
+                  <strong id="negotiatedSubtotal">R$ 0,00</strong>
+                </div>
+                <div class="summary-item">
+                  <span>Taxa maquininha</span>
+                  <strong id="machineFee">R$ 0,00</strong>
+                </div>
+                <div class="summary-item highlight">
+                  <span>Total a cobrar</span>
+                  <strong id="totalCharge">R$ 0,00</strong>
+                </div>
+                <div class="summary-item">
+                  <span>Liquido previsto</span>
+                  <strong id="netAmount">R$ 0,00</strong>
+                </div>
+                <div class="summary-item">
+                  <span>Pagamento</span>
+                  <strong id="paymentSummary">PIX | 1x</strong>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tab-pane" id="orcamentos-tab">
+        <div class="dashboard-grid">
+          <div class="card">
+            <div class="card-header">
+              <h2>Montagem do Orçamento</h2>
+              <button class="btn-secondary" id="newQuoteBtn">Novo rascunho</button>
+            </div>
+            <div class="card-body">
+              <div id="quoteItemsContainer"></div>
+              <div class="quote-actions-row">
+                <button class="btn-secondary" id="adjustQuoteFinanceBtn">Ajustar desconto/nota</button>
+                <button class="btn-primary" id="finalizeQuoteBtn">Marcar como enviado</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <h2>Visualização do orçamento para cliente</h2>
+              <div class="header-actions">
+                <button class="btn-secondary" id="copyQuoteBtn">Copiar texto</button>
+                <button class="btn-primary" id="printQuoteBtn">Imprimir</button>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="terms-config">
+                <h3>Configuração dos termos mensais</h3>
+                <label class="check-row">
+                  <input type="checkbox" id="monthlyPlanContracted" />
+                  Projeto plano mensal contratado
+                </label>
+                <label class="check-row">
+                  <input type="checkbox" id="eventsPackContracted" />
+                  Pacote de eventos (Ano Novo, Carnaval, Pascoa, Dia das Mães, Dia dos Namorados, Dia dos Pais, Halloween e Natal) contratado
+                </label>
+                <label class="check-row">
+                  <input type="checkbox" id="backendSupportContracted" checked />
+                  Suporte mensal de back-end contratado (obrigatório)
+                </label>
+                <label class="check-row">
+                  <input type="checkbox" id="frontendSupportContracted" checked />
+                  Suporte mensal de front-end contratado (obrigatório)
+                </label>
+              </div>
+              <div id="quotePreview" class="quote-preview"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tab-pane" id="catalogo-tab">
+        <div class="card">
+          <div class="card-header">
+            <h2>Catalogo de Serviços</h2>
+            <button class="btn-primary" id="newServiceBtn">Novo Serviço</button>
+          </div>
+          <div class="card-body">
+            <div class="search-box">
+              <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.35-4.35"></path></svg>
+              <input id="catalogSearch" type="search" placeholder="Buscar servicos..." />
+            </div>
+            <div id="catalogGrid" class="catalog-grid"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tab-pane" id="clientes-tab">
+        <div class="card">
+          <div class="card-header">
+            <h2>Gerenciar Clientes</h2>
+            <button class="btn-primary" id="newClientBtn">Novo Cliente</button>
+          </div>
+          <div class="card-body">
+            <div class="search-box">
+              <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.35-4.35"></path></svg>
+              <input id="clientSearch" type="search" placeholder="Buscar clientes..." />
+            </div>
+            <div id="clientList" class="client-list"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tab-pane" id="historico-tab">
+        <div class="card">
+          <div class="card-header">
+            <h2>Histórico de Orçamentos</h2>
+          </div>
+          <div class="card-body">
+            <div id="historyList" class="history-list"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tab-pane" id="gestao-tab">
+        <div class="card management-card">
+          <div class="card-header">
+            <h2>Gestão de Clientes e Cobranças</h2>
+          </div>
+          <div class="card-body">
+            <div class="management-actions">
+              <button class="management-btn" id="mgmtCompletedBtn">
+                <span class="management-icon">
+                  <svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"></path><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg>
+                </span>
+                <span>Projetos finalizados</span>
+              </button>
+              <button class="management-btn" id="mgmtEventsBtn">
+                <span class="management-icon">
+                  <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                </span>
+                <span>Pacote de eventos</span>
+              </button>
+              <button class="management-btn" id="mgmtFrontendBtn">
+                <span class="management-icon">
+                  <svg viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="14" rx="2"></rect><line x1="8" y1="20" x2="16" y2="20"></line><line x1="12" y1="18" x2="12" y2="20"></line></svg>
+                </span>
+                <span>Cobrança Front-End</span>
+              </button>
+              <button class="management-btn" id="mgmtFullstackBtn">
+                <span class="management-icon">
+                  <svg viewBox="0 0 24 24"><path d="M7 8l-4 4 4 4"></path><path d="M17 8l4 4-4 4"></path><line x1="14" y1="4" x2="10" y2="20"></line></svg>
+                </span>
+                <span>Cobrança Full-Stack</span>
+              </button>
+            </div>
+            <div class="management-panel" id="managementPanel">
+              <div class="management-meta">
+                <p><strong>Data e hora:</strong> <span id="managementNow">-</span></p>
+                <p><strong>Proximo evento:</strong> <span id="managementNextEvent">-</span></p>
+              </div>
+              <h3 id="managementSectionTitle">Selecione um modulo acima</h3>
+              <p id="managementSectionHint" class="management-hint">Clique em um botao para abrir a listagem.</p>
+              <div id="managementList" class="management-list"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <div id="profileModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Editar Perfil</h2>
+        <button class="close-btn">&times;</button>
+      </div>
+      <form id="profileForm" class="form">
+        <div class="form-group">
+          <label>Nome completo</label>
+          <input id="profileName" required />
+        </div>
+        <div class="form-group">
+          <label>E-mail</label>
+          <input id="profileEmail" type="email" required />
+        </div>
+        <div class="form-group">
+          <label>Telefone</label>
+          <input id="profilePhone" required />
+        </div>
+        <div class="form-group">
+          <label>CNPJ</label>
+          <input id="profileCnpj" required />
+        </div>
+        <div class="form-group">
+          <label>Endereço</label>
+          <input id="profileAddress" required />
+        </div>
+        <div class="form-group">
+          <label>Cidade</label>
+          <input id="profileCity" required />
+        </div>
+        <button type="submit" class="btn-primary">Salvar Alteracoes</button>
+      </form>
+    </div>
+  </div>
+
+  <div id="clientEditModal" class="modal">
+    <div class="modal-content modal-wide">
+      <div class="modal-header">
+        <h2>Alterar Cliente</h2>
+        <button class="close-btn" id="closeClientEditModalBtn">&times;</button>
+      </div>
+      <form id="clientEditForm" class="form">
+        <input type="hidden" id="editClientId" />
+        <div class="form-group">
+          <label>Nome do contato</label>
+          <input id="editClientName" required />
+        </div>
+        <div class="form-group">
+          <label>Nome da empresa</label>
+          <input id="editClientCompanyName" required />
+        </div>
+        <div class="form-group">
+          <label>E-mail</label>
+          <input id="editClientEmail" type="email" required />
+        </div>
+        <div class="form-group">
+          <label>Telefone</label>
+          <input id="editClientPhone" required />
+        </div>
+        <div class="form-group">
+          <label>Tipo de documento</label>
+          <select id="editClientDocumentType" required>
+            <option value="CPF">CPF</option>
+            <option value="CNPJ">CNPJ</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Numero do documento</label>
+          <input id="editClientDocumentNumber" required />
+        </div>
+        <div class="form-group">
+          <label>CEP</label>
+          <input id="editClientAddressZipCode" required />
+        </div>
+        <div class="form-group">
+          <label>Estado (UF)</label>
+          <input id="editClientAddressState" required />
+        </div>
+        <div class="form-group">
+          <label>Cidade</label>
+          <input id="editClientAddressCity" required />
+        </div>
+        <div class="form-group">
+          <label>Báirro</label>
+          <input id="editClientAddressDistrict" required />
+        </div>
+        <div class="form-group">
+          <label>Rua</label>
+          <input id="editClientAddressStreet" required />
+        </div>
+        <div class="form-group">
+          <label>Numero</label>
+          <input id="editClientAddressNumber" required />
+        </div>
+        <div class="form-group">
+          <label>Complemento</label>
+          <input id="editClientAddressComplement" />
+        </div>
+        <div class="form-group">
+          <label>Observações</label>
+          <textarea id="editClientNotes" rows="3"></textarea>
+        </div>
+        <button type="submit" class="btn-primary">Salvar alterações do cliente</button>
+      </form>
+    </div>
+  </div>
+
+  <div id="clientHistoryModal" class="modal">
+    <div class="modal-content modal-wide">
+      <div class="modal-header">
+        <h2>Orçamentos do Cliente</h2>
+        <button class="close-btn" id="closeClientHistoryModalBtn">&times;</button>
+      </div>
+      <div class="form-group">
+        <label>Pesquisar orçamento deste cliente</label>
+        <input id="clientHistorySearch" type="search" placeholder="Digite o nome do projeto..." />
+      </div>
+      <div id="clientHistoryList" class="history-list"></div>
+    </div>
+  </div>
+
+  <div id="historyDetailModal" class="modal">
+    <div class="modal-content modal-wide">
+      <div class="modal-header">
+        <h2>Detalhes do Orçamento</h2>
+        <button class="close-btn" id="closeHistoryDetailModalBtn">&times;</button>
+      </div>
+      <div id="historyDetailContent" class="history-detail-content"></div>
+      <div class="history-status-actions" id="historyStatusActions">
+        <button class="btn-secondary status-btn" data-status="DRAFT" title="Orcamento">
+          <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+          Orcamento
+        </button>
+        <button class="btn-secondary status-btn" data-status="SENT" title="Enviado">
+          <svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+          Enviado
+        </button>
+        <button class="btn-secondary status-btn" data-status="APPROVED" title="Assinado">
+          <svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"></path></svg>
+          Assinado
+        </button>
+        <button class="btn-secondary status-btn" data-status="COMPLETED" title="Projeto concluido">
+          <svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"></path><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg>
+          Projeto concluido
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div id="catalogServiceModal" class="modal">
+    <div class="modal-content modal-wide">
+      <div class="modal-header">
+        <h2 id="catalogServiceModalTitle">Novo Serviço</h2>
+        <button class="close-btn" id="closeCatalogServiceModalBtn">&times;</button>
+      </div>
+      <form id="catalogServiceForm" class="form">
+        <input type="hidden" id="catalogServiceId" />
+        <div class="form-group">
+          <label>Nome do serviço</label>
+          <input id="catalogServiceName" required />
+        </div>
+        <div class="form-group">
+          <label>Categoria</label>
+          <input id="catalogServiceCategory" required />
+        </div>
+        <div class="form-group">
+          <label>Descrição</label>
+          <textarea id="catalogServiceDescription" rows="3" required></textarea>
+        </div>
+        <div class="form-group">
+          <label>Tipo</label>
+          <select id="catalogServiceType" required>
+            <option value="BASE_PROJECT">BASE_PROJECT</option>
+            <option value="MODULE">MODULE</option>
+            <option value="FEATURE">FEATURE</option>
+            <option value="INTEGRATION">INTEGRATION</option>
+            <option value="SUPPORT">SUPPORT</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Preço (R$)</label>
+          <input id="catalogServicePrice" type="number" min="0.01" step="0.01" required />
+        </div>
+        <div class="form-group">
+          <label>Prazo estimado (dias)</label>
+          <input id="catalogServiceEstimatedDays" type="number" min="1" step="1" required />
+        </div>
+        <button type="submit" class="btn-primary">Salvar serviço</button>
+      </form>
+    </div>
+  </div>
+
+  <div id="clientCreateModal" class="modal">
+    <div class="modal-content modal-wide">
+      <div class="modal-header">
+        <h2>Novo Cliente</h2>
+        <button class="close-btn" id="closeClientCreateModalBtn">&times;</button>
+      </div>
+      <form id="clientCreateForm" class="form">
+        <div class="form-group">
+          <label>Nome do contato</label>
+          <input id="createClientName" required />
+        </div>
+        <div class="form-group">
+          <label>Nome da empresa</label>
+          <input id="createClientCompanyName" required />
+        </div>
+        <div class="form-group">
+          <label>E-mail</label>
+          <input id="createClientEmail" type="email" required />
+        </div>
+        <div class="form-group">
+          <label>Telefone</label>
+          <input id="createClientPhone" required />
+        </div>
+        <div class="form-group">
+          <label>Tipo de documento</label>
+          <select id="createClientDocumentType" required>
+            <option value="CPF">CPF</option>
+            <option value="CNPJ">CNPJ</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Numero do documento</label>
+          <input id="createClientDocumentNumber" required />
+        </div>
+        <div class="form-group">
+          <label>CEP</label>
+          <input id="createClientAddressZipCode" required />
+        </div>
+        <div class="form-group">
+          <label>Estado (UF)</label>
+          <input id="createClientAddressState" required />
+        </div>
+        <div class="form-group">
+          <label>Cidade</label>
+          <input id="createClientAddressCity" required />
+        </div>
+        <div class="form-group">
+          <label>Bairro</label>
+          <input id="createClientAddressDistrict" required />
+        </div>
+        <div class="form-group">
+          <label>Rua</label>
+          <input id="createClientAddressStreet" required />
+        </div>
+        <div class="form-group">
+          <label>Numero</label>
+          <input id="createClientAddressNumber" required />
+        </div>
+        <div class="form-group">
+          <label>Complemento</label>
+          <input id="createClientAddressComplement" />
+        </div>
+        <button type="submit" class="btn-primary">Salvar cliente</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal de edição de item do orçamento (fixo no DOM) -->
+  <div class="modal-overlay hidden" id="quoteItemEditModal">
+    <div class="modal-card">
+      <div class="modal-card-header">
+        <h3>Editar item</h3>
+      </div>
+      <div class="modal-card-body">
+        <div class="form-group">
+          <label for="quoteItemEditUnitPrice">Valor unitário (R$)</label>
+          <input id="quoteItemEditUnitPrice" type="number" min="0" step="0.01" />
+        </div>
+        <div class="form-group">
+          <label for="quoteItemEditDays">Prazo (dias)</label>
+          <input id="quoteItemEditDays" type="number" min="1" step="1" />
+        </div>
+      </div>
+      <div class="modal-card-footer">
+        <button type="button" class="btn-secondary" id="quoteItemEditCancelBtn">Cancelar</button>
+        <button type="button" class="btn-primary" id="quoteItemEditSaveBtn">Salvar</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast" class="toast"></div>
+  <script src="./assets/app-prisma.js"></script>
+</body>
+</html>
