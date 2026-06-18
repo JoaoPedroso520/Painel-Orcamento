@@ -25,7 +25,11 @@ class ApiClient {
       try {
         payload = JSON.parse(rawBody);
       } catch (_error) {
-        payload = {};
+        if (response.status === 503 && rawBody.includes("Service Suspended")) {
+          payload = { message: "Servidor suspenso no Render. Reative o servico do backend para continuar." };
+        } else {
+          payload = {};
+        }
       }
     }
     if (!response.ok) {

@@ -24,6 +24,9 @@ async function readApiResponse(response) {
   try {
     return JSON.parse(rawBody);
   } catch (_error) {
+    if (response.status === 503 && rawBody.includes("Service Suspended")) {
+      return { message: "Servidor suspenso no Render. Reative o servico do backend para entrar." };
+    }
     return {
       message: response.ok
         ? rawBody
