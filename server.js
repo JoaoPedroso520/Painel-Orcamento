@@ -1,6 +1,7 @@
 const path = require("path");
 const crypto = require("crypto");
 const express = require("express");
+const cors = require("cors");
 const dotenv = require("dotenv");
 const nodemailer = require("nodemailer");
 const { PrismaClient } = require("@prisma/client");
@@ -452,21 +453,8 @@ const DEFAULT_CATALOG_ITEMS = [
   }
 ];
 
+app.use(cors());
 app.use(express.json());
-
-app.use((req, res, next) => {
-  res.setHeader("Access-Control-Allow-Origin", "*");
-  res.setHeader("Access-Control-Allow-Methods", "GET,POST,PATCH,DELETE,OPTIONS");
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type,Authorization");
-  if (req.method === "OPTIONS") return res.sendStatus(204);
-  next();
-});
-
-// Middleware para redirecionar raiz para login se não autenticado
-app.get("/", (req, res, next) => {
-  const indexPath = path.join(__dirname, "public", "index.html");
-  res.sendFile(indexPath);
-});
 
 app.use(express.static(path.join(__dirname, "public")));
 app.use("/IMG", express.static(path.join(__dirname, "img")));
