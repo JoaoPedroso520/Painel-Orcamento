@@ -455,17 +455,9 @@ const DEFAULT_CATALOG_ITEMS = [
 app.use(express.json());
 
 app.use((req, res, next) => {
-  const allowed = [
-    process.env.FRONTEND_URL,
-    "http://localhost:3000",
-    "http://127.0.0.1:3000"
-  ].filter(Boolean);
-  const origin = req.headers.origin;
-  if (!origin || allowed.includes(origin) || origin.endsWith(".netlify.app") || origin.endsWith(".onrender.com")) {
-    res.setHeader("Access-Control-Allow-Origin", origin || "*");
-    res.setHeader("Access-Control-Allow-Methods", "GET,POST,PATCH,DELETE,OPTIONS");
-    res.setHeader("Access-Control-Allow-Headers", "Content-Type,Authorization");
-  }
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader("Access-Control-Allow-Methods", "GET,POST,PATCH,DELETE,OPTIONS");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type,Authorization");
   if (req.method === "OPTIONS") return res.sendStatus(204);
   next();
 });
